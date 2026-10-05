@@ -38,22 +38,11 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CGhmiter::CGhmiter()
-{ // char curdir[_MAX_PATH];
-
-  // ProgramPath.Empty();
-	// TempPath.Empty();
-  // GetCurrentDirectory(_MAX_PATH, curdir);
-	// CurrentPath = curdir;
+{
 }
 
 CGhmiter::~CGhmiter()
 {
-  //if (!ProgramPath.IsEmpty() ) {
-  //	DeleteResultFiles();
-	//	DeleteSourceFiles();
-	//}
-
-  // SetCurrentDirectory((LPCTSTR) CurrentPath);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -386,42 +375,6 @@ int CGhmiter::ComputeHierarchicalLevels(int VarNr, int *nGroup, CVariable *m_var
 	}
 	return n;
 }
-
-/*
-bool CGhmiter::ExecuteProgram()
-{ int result;
-
-  result = _spawnl(_P_WAIT, (LPCTSTR) ProgramPath, (LPCTSTR) ProgramPath, NULL);
-	if (result == -1)	{
-		return false;
-	}
-
-  return true;
-}
-*/
-
-/*
-bool CGhmiter::MakeTempPath()
-{	char path[_MAX_PATH];
-
-	if (!GetTempPath(_MAX_PATH, path)) {
-		return false;
-	}
-
-	TempPath = path;
-	return true;
-}
-*/
-
-/*
-bool CGhmiter::SetProgramPath(LPCTSTR mProgramPath)
-{
-	// Check for existence
-  if (_access(mProgramPath, 0) == -1 )	return false;
-	ProgramPath = mProgramPath;
-  return true;
-}
-*/
 
 // secondary unsafe cells that are calculated by GHmiter are set as unsafe.
 bool CGhmiter::SetSecondaryUnsafe(const char *FileName, CTable *tab, long *nSetSecondary, int *ErrorCode, bool IsSingleton)

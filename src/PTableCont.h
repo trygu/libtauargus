@@ -14,7 +14,13 @@
 #ifndef PTABLECONT_H
 #define PTABLECONT_H
 
-typedef std::map<double, double[2]> PTableDRow;
+#include <map>
+#include <array>
+#include <string>
+
+// A row of the p-table: key j -> { p, p_ub }. std::array (not a raw C array)
+// so the value is assignable/copyable, which libc++ and MSVC require.
+typedef std::map<double, std::array<double, 2>> PTableDRow;
 
 class PTableCont {
 public:
