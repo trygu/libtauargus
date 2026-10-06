@@ -1377,9 +1377,19 @@ bool TauArgus::GetTableCellValue(long TableIndex, long CellIndex, double *CellRe
         return false;
     }
 
+    if (TableIndex < 0 || TableIndex >= m_ntab) {
+        return false;
+    }
     CTable *table = GetTable(TableIndex);
+    if (table == NULL) {
+        return false;
+    }
 
     CDataCell *dc = table->GetCell(CellIndex);
+    if (dc == NULL) {
+        *CellResponse = 0.0;
+        return false;
+    }
 
     *CellResponse = dc->GetResp();
 
@@ -1392,9 +1402,20 @@ bool TauArgus::GetTableCellProtectionLevels(long TableIndex, long CellIndex, dou
         return false;
     }
     
+    if (TableIndex < 0 || TableIndex >= m_ntab) {
+        return false;
+    }
     CTable *table = GetTable(TableIndex);
+    if (table == NULL) {
+        return false;
+    }
 
     CDataCell *dc = table->GetCell(CellIndex);
+    if (dc == NULL) {
+        *lpl = 0.0;
+        *upl = 0.0;
+        return false;
+    }
 
     *lpl = dc->GetLowerProtectionLevel();
     *upl = dc->GetUpperProtectionLevel();
@@ -1408,9 +1429,19 @@ bool TauArgus::GetTableCellStatus(long TableIndex, long CellIndex, long *CellSta
         return false;
     }
 
+    if (TableIndex < 0 || TableIndex >= m_ntab) {
+        return false;
+    }
     CTable *table = GetTable(TableIndex);
+    if (table == NULL) {
+        return false;
+    }
 
     CDataCell *dc = table->GetCell(CellIndex);
+    if (dc == NULL) {
+        *CellStatus = CS_EMPTY;
+        return false;
+    }
 
     *CellStatus = dc->GetStatus();
 
@@ -2089,14 +2120,25 @@ long TauArgus::SetSecondaryJJFORMAT(long TableIndex, const char* FileName, bool 
 	return 1;
 }
 
-// Get Size of a tabel. This function has to be changed
+// Get Size of a tabel.
 void TauArgus::GetTotalTabelSize(long TableIndex, long* nCell, long * SizeDataCell)
 {
-	*nCell = m_tab[TableIndex].nCell;
-	int lenarrcell = m_tab[TableIndex].NumberofMaxScoreCell;
-	int lenarrhold = m_tab[TableIndex].NumberofMaxScoreHolding;
-	int applyhold = m_tab[TableIndex].ApplyHolding;
-	int applyweight = m_tab[TableIndex].ApplyWeight;
+	if (TableIndex < 0 || TableIndex >= m_ntab) {
+		*nCell = 0;
+		*SizeDataCell = 0;
+		return;
+	}
+	CTable *tab = GetTable(TableIndex);
+	if (tab == NULL) {
+		*nCell = 0;
+		*SizeDataCell = 0;
+		return;
+	}
+	*nCell = tab->nCell;
+	int lenarrcell = tab->NumberofMaxScoreCell;
+	int lenarrhold = tab->NumberofMaxScoreHolding;
+	int applyhold = tab->ApplyHolding;
+	int applyweight = tab->ApplyWeight;
 	*SizeDataCell = sizeof(CDataCell(lenarrcell, lenarrhold, applyhold, applyweight));
 }
 
