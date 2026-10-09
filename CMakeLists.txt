@@ -29,7 +29,6 @@ set(CORE_SRC
 if(WIN32)
     # Compile the Windows version resource (harmless no-op elsewhere).
     list(APPEND CORE_SRC src/Versioninfo.rc)
-    set_source_files_properties(src/Versioninfo.rc PROPERTIES LANGUAGE C)
 endif()
 
 add_library(tauargus_core STATIC ${CORE_SRC})
