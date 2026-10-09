@@ -1,23 +1,49 @@
-<!-- badges: start -->
+# tauargus — core
 
-[![Build Library](https://github.com/sdcTools/libtauargus/actions/workflows/MakeDLL.yml/badge.svg)](https://github.com/sdcTools/libtauargus/actions/workflows/MakeDLL.yml/)
-[![GitHub last
-commit](https://img.shields.io/github/last-commit/sdcTools/libtauargus.svg?logo=github)](https://github.com/sdcTools/libtauargus/commits/master)
-[![GitHub code size in
-bytes](https://img.shields.io/github/languages/code-size/sdcTools/libtauargus.svg?logo=github)](https://github.com/sdcTools/libtauargus)
-<!-- badges: end -->
+The **core** module is the solver-independent engine of the τ-ARGUS rewrite: the
+statistical-disclosure-control (SDC) data model, Argus / JJ file I/O, and the
+entry points that drive each optimisation step.
 
-## Argus Open Source
-Software to apply Statistical Disclosure Control techniques
+It is a **static C++ library**. It does not talk to any solver directly — the
+linear-programming backend lives in [`../csp`](../csp) and the
+mixed-integer backend in [`../crp`](../crp). Core exposes a C++ object API
+(`TauArgus` and its supporting classes in `src/TauArgus.h`) that the Python
+binding (`python/cpp/bind_core.cpp` in the top-level repo) wraps with pybind11.
 
-Copyright 2014 Statistics Netherlands
+## Contents
 
-This program is free software; you can redistribute it and/or 
-modify it under the termcomboBoxOutputDimensions of the European Union Public Licence 
-(EUPL) version 1.1, as published by the European Commission.
+- **Data model** — `PTable`/`PTableCont` (response & table containers),
+  `DataCell`, `Variable`, `Code`/`SubCodeList`, `Properties`.
+- **File I/O** — `JJFormat` (the binary `.jj` optimisation format), `AMPL`
+  (HiGHS/AMPL LP export), `CSV`.
+- **Engine** — `TauArgus` (table/code setup, safety & suppression,
+  protection levels), `Ghmiter` (iterative rounding), `Hitas` (HiGHS-based
+  secondary data handling).
 
-You can find the text of the EUPL v1.1 on
-https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+The legacy Windows COM server, VB6 code, and SWIG/JNI wrappers that used to
+ship here are gone; all bindings to the new stack are generated with
+pybind11 instead of SWIG.
 
-This software is distributed on an "AS IS" basis without 
-warranties or conditions of any kind, either express or implied.
+## Build
+
+Core is built as part of the superbuild in the top-level repo:
+
+```bash
+cmake -S native -B native/build \
+      -DHighs_DIR=$(brew --prefix)/lib/cmake/Highs
+cmake --build native/build
+```
+
+Building it standalone (it has no external dependencies):
+
+```bash
+cmake -S native/core -B native/core/build
+cmake --build native/core/build
+```
+
+Produces `libtauargus_core.a` and installs the public headers from `src/`.
+
+## License
+
+τ-ARGUS is © Statistics Netherlands and is distributed under the EUPL v1.1 /
+EUPL-1.2. See the top-level repository for the full notice.

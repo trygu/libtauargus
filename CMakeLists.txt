@@ -1,9 +1,9 @@
 # Tau-Argus core: data model, Argus/JJ file I/O, and SDC engine entry points.
-# Solver-independent. Ported from the NetBeans/MinGW Makefile.
+# Solver-independent. Ported from the legacy NetBeans/MinGW build.
 #
-# The COM/Visual-Basic-6 sources (GhmiterANCO, TauArgCtrl, StdAfx, NewTauArgus)
-# and the SWIG JNI wrapper (TauArgusJava_wrap) are intentionally excluded;
-# bindings to the new stack are generated with pybind11 instead of SWIG.
+# The legacy Windows COM server, VB6, and SWIG/JNI wrapper sources were
+# removed from this repo; bindings to the new stack are generated with
+# pybind11 (see python/cpp/bind_core.cpp in the top-level repo).
 
 cmake_minimum_required(VERSION 3.16)
 
