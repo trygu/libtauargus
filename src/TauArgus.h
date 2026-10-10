@@ -243,6 +243,9 @@ public:
 	bool GetTableCellValue(/*[in]*/ long TableIndex, /*[in]*/  long CellIndex, /*[in,out]*/ double *CellResponse);
         bool GetTableCellProtectionLevels(/*[in]*/ long TableIndex,/*[in]*/ long CellIndex,/*[in,out]*/ double *lpl,/*[in,out]*/ double *upl);
         bool GetTableCellStatus(/*[in]*/ long TableIndex, /*[in]*/ long CellIndex, /*[in,out]*/ long *CellStatus);
+	// Required output capacities for GetTableCell (including recoded tables).
+	bool GetTableCellBufferSizes(long TableIndex, long *Dimensions,
+	                            long *CellScores, long *HoldingScores);
 	bool GetTableCell(/*[in]*/ long TableIndex, /*[in,out]*/ long* DimIndex, /*[in,out]*/ double *CellResponse, /*[in,out] */ double *CellRoundedResp,
                           /*[in,out] */double *CellCTAResp, /*[in,out] */ double *CellCKMResp, /*[in,out]*/ double *CellShadow, 
                           /*[in,out]*/ double *CellCost, /*[in,out]*/ double *CellKey, /*[in,out]*/ double *CellKeyNoZeros,

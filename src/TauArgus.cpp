@@ -1449,6 +1449,19 @@ bool TauArgus::GetTableCellStatus(long TableIndex, long CellIndex, long *CellSta
 }
 
 // Returns the information in a cell.
+bool TauArgus::GetTableCellBufferSizes(long TableIndex, long *Dimensions,
+                                     long *CellScores, long *HoldingScores)
+{
+    if (TableIndex < 0 || TableIndex >= m_ntab || !m_CompletedCodeList) {
+        return false;
+    }
+    CTable *table = GetTable(TableIndex);
+    *Dimensions = table->nDim;
+    *CellScores = table->NumberofMaxScoreCell;
+    *HoldingScores = table->NumberofMaxScoreHolding;
+    return true;
+}
+
 bool TauArgus::GetTableCell(long TableIndex, long *DimIndex, double *CellResponse, double *CellRoundedResp, double *CellCTAResp,
                                 double *CellCKMResp,
                                 double *CellShadow, double *CellCost, double *CellKey, double *CellKeyNoZeros,
