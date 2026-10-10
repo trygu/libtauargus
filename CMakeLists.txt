@@ -42,6 +42,15 @@ target_include_directories(tauargus_core
 
 target_compile_features(tauargus_core PUBLIC cxx_std_11)
 
+option(TAUARGUS_CORE_BUILD_TESTS "Build native core regression tests" OFF)
+if(TAUARGUS_CORE_BUILD_TESTS)
+    enable_testing()
+    add_executable(test_cell_buffer_sizes tests/test_cell_buffer_sizes.cpp)
+    target_link_libraries(test_cell_buffer_sizes PRIVATE tauargus_core)
+    add_test(NAME cell_buffer_sizes COMMAND test_cell_buffer_sizes
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/capacity.asc")
+endif()
+
 target_compile_options(tauargus_core PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -fno-strict-aliasing>
 )

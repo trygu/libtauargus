@@ -1456,6 +1456,9 @@ bool TauArgus::GetTableCellBufferSizes(long TableIndex, long *Dimensions,
         return false;
     }
     CTable *table = GetTable(TableIndex);
+    if (table == NULL || !table->Prepared) {
+        return false;
+    }
     *Dimensions = table->nDim;
     *CellScores = table->NumberofMaxScoreCell;
     *HoldingScores = table->NumberofMaxScoreHolding;
