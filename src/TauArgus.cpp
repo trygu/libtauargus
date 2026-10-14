@@ -3458,7 +3458,6 @@ bool TauArgus::FillInTable(long Index, string *sCodes, double Cost,
 	dc->SetResp(Resp);
 	dc->SetShadow(Shadow);
 	dc->SetCost(Cost);
-	dc->SetStatus(Status);
 
 	// if frequency is given
 //	if (m_HasFreq)		{
