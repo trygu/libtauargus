@@ -97,8 +97,8 @@ void PTable::SetmaxDiff(){
     // parse first line
     i0 = atoi(strtok(line,";"));            // i
     pentry.j = atof(strtok(NULL,";"));      // j
-    atof(strtok(NULL,";"));                 // p       // not used
-    atof(strtok(NULL,";"));                 // diff    // not used    
+    strtok(NULL,";");                 // p       // not used
+    strtok(NULL,";");                 // diff    // not used
     pentry.p_ub = atof(strtok(NULL,";"));   // p_ij_ub
     // save as first entry in row
     row.push_back(pentry);
@@ -113,8 +113,8 @@ void PTable::SetmaxDiff(){
         }
         // parse new line
         pentry.j = atoi(strtok(NULL,";"));      // j
-        atof(strtok(NULL,";"));                 // p       // not used
-        atof(strtok(NULL,";"));                 // diff    // not used    
+        strtok(NULL,";");                 // p       // not used
+        strtok(NULL,";");                 // diff    // not used
         pentry.p_ub = atof(strtok(NULL,";"));   // p_ij_ub
         // save as new entry in row
         row.push_back(pentry);
