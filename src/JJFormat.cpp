@@ -486,12 +486,12 @@ bool CJJFormat::SetSecUnSafe(CTable *tab,  CVariable *var, FILE *fd, bool WithBo
 	CDataCell *dc;
 	// lees eerst n lege regels als nodig
 	for (i = 0; i < n; i++) {
-	  fgets(str, 1000, fd);
+	  if (!fgets(str, sizeof(str), fd)) return false;
 	}
 
 	while (!feof(fd) ) {
 		str[0] = 0;
-		fgets(str, 1000, fd);
+		if (!fgets(str, sizeof(str), fd)) return feof(fd) != 0;
 		if (str[0] == 0) break;
 		if (strchr(str, 'm') != 0) {
 			// first integer: cellnr

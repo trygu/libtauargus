@@ -519,7 +519,7 @@ int CVariable::SetCodeList(LPCTSTR FileName, LPCTSTR LevelString)
 	while (!feof(fd) ) {
 		char str[200];
 		str[0] = 0;
-		fgets(str, 200, fd);
+		if (!fgets(str, sizeof(str), fd)) break;
 		if (str[0] == 0) break;
 		s = str;
 		// trim right

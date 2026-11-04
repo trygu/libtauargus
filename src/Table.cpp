@@ -1032,7 +1032,7 @@ bool CTable::SetSecondaryHITAS(FILE *fd, CVariable *var, long *nSetSecondary)
 	int n;
 	while (!feof(fd) ) {
 		str[0] = 0;
-		fgets(str, 200, fd);
+		if (!fgets(str, sizeof(str), fd)) return feof(fd) != 0;
 		if (str[0] == 0) break;
 
 		n = 0;

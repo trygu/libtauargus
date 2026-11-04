@@ -770,8 +770,7 @@ bool TauArgus::ExploreFile(const char* FileName, long *ErrorCode, long *LineNumb
 
     // read first record to determine the fixed recordlength
     str[0] = 0;
-    fgets((char *)str, MAXRECORDLENGTH, fd);
-    if (str[0] == 0) {
+    if (!fgets((char *)str, MAXRECORDLENGTH, fd) || str[0] == 0) {
         *ErrorCode = EMPTYFILE;
 	goto error;
     }
@@ -2944,12 +2943,10 @@ bool TauArgus::SetRoundedResponse(const char* RoundedFile, long TableIndex)
 		char s[30];
 		double d;
 		double RoundedResp; //was float
-		fscanf( frounded, "%ld", &CellNum );
-		fscanf( frounded, "%s", s);
-		fscanf ( frounded, "%lf", &d); // original value
-		fscanf (frounded,"%s", s); // to
-		//fscanf (frounded, "%f", &RoundedResp);
-		fscanf (frounded, "%s", s);
+		if (fscanf(frounded, "%ld %29s %lf %29s %29s", &CellNum, s, &d, s, s) != 5) {
+			fclose(frounded);
+			return false;
+		}
 		RoundedResp = atof(s);
 		//fscanf( frounded, "%s", s);
 
@@ -3053,21 +3050,28 @@ bool TauArgus::SetSecondaryFromHierarchicalAMPL(const char* FileName, long Table
 	long *SubTableCellIndexTuple = new long [tab->nDim];
 	long *SubTableTuple = new long [tab->nDim];
 	long *TableCellIndex = new long [tab->nDim];
+	auto invalid_result = [&]() {
+		delete [] SubTableCellIndexTuple;
+		delete [] SubTableTuple;
+		delete [] TableCellIndex;
+		fclose(fd);
+		return false;
+	};
 
 	fseek( fd, 0L, SEEK_SET );
 	long nSuppr;
-	fscanf(fd, "%ld", &nSuppr);
+	if (fscanf(fd, "%ld", &nSuppr) != 1) return invalid_result();
 	//while (!feof(fd) ) {
 	for (long j = 0; j < nSuppr; j++)	{
 		long subtablenum;
 		char s[30];
-		fscanf(fd, "%ld", &subtablenum );
-		fscanf(fd, "%c", s);
+		if (fscanf(fd, "%ld", &subtablenum) != 1 ||
+		    fscanf(fd, "%c", s) != 1) return invalid_result();
 		long i;
 		for (i = 0; i < tab->nDim; i++)	{
-			fscanf(fd, "%ld", &SubTableCellIndexTuple[i]);
+			if (fscanf(fd, "%ld", &SubTableCellIndexTuple[i]) != 1) return invalid_result();
 			if (i == 0)	{
-				fscanf(fd, "%c", s);
+				if (fscanf(fd, "%c", s) != 1) return invalid_result();
 			}
 		}
 		SubTableTupleForSubTable(TableIndex,subtablenum,SubTableTuple);
@@ -3088,13 +3092,14 @@ bool TauArgus::SetSecondaryFromHierarchicalAMPL(const char* FileName, long Table
 			dc->SetStatus(CS_SECONDARY_UNSAFE);
 		}
 		else {
-			return false;
+			return invalid_result();
 		}
 	}
 	//}
 	delete [] SubTableCellIndexTuple;
 	delete [] SubTableTuple;
 	delete [] TableCellIndex;
+	fclose(fd);
 
 	return true;
 }
@@ -3258,7 +3263,7 @@ int TauArgus::ReadMicroRecord(FILE *fd, char *str)
 
 	while (length == 0) {
 		str[0] = 0;
-		fgets((char *)str, MAXRECORDLENGTH, fd);
+		if (!fgets((char *)str, MAXRECORDLENGTH, fd)) return feof(fd) ? 0 : -1;
 		if (str[0] == 0) return 0;  // EOF
 		length = strlen((char *)str) - 1;
 		while (length > 0 && str[length] < ' ') length--;

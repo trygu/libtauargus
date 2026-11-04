@@ -409,8 +409,8 @@ bool CGhmiter::SetSecUnSafe(CTable *tab, FILE *fd, long *Dims, int niv, bool IsS
 		CDataCell *dc;
 		char str[2048];
 
+		if (!fgets(str, sizeof(str), fd)) return false;
 		dc = tab->GetCell(Dims);
-		fgets(str, 2048, fd);
 		if (atoi(str) == 1129)
 		{ // first number 1129 = secondary set
 			int Status = dc->GetStatus();
