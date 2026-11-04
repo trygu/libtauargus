@@ -19,6 +19,7 @@
 #define TauArgus_h
 
 #include <map>
+#include <cstddef>
 #include <clocale>
 #include <vector>
 #include <string>
@@ -102,8 +103,8 @@ private:
 	void ShowCodeLists();
 	bool ShowTable(const char *fname, CTable& tab);
 	void ShowTableLayer(FILE *fd, int var1, int var2, int cellnr, CTable &tab);
-	int  ShowTableLayerCell(char *str, double val, int ndec);
-	int  ShowTableLayerCell(char *str, long val);
+	int  ShowTableLayerCell(char *str, std::size_t capacity, double val, int ndec);
+	int  ShowTableLayerCell(char *str, std::size_t capacity, long val);
 
 
 	// for RECODE

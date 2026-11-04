@@ -95,7 +95,7 @@ void PTableCont::Write(std::string type){
     PTableDRow::iterator pos;
     std::map<int,PTableDRow>::iterator rowpos;
     
-    printf("Data[%s].size() = %u\n", type.c_str(),Data[type].size());
+    printf("Data[%s].size() = %zu\n", type.c_str(),Data[type].size());
     
     for (rowpos=Data[type].begin();rowpos!=Data[type].end();++rowpos){
         printf("row %d:",rowpos->first);

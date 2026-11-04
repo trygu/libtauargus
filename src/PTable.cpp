@@ -133,7 +133,7 @@ void PTable::SetmaxDiff(){
     PTableRow::iterator pos;
     
     FILE *pout = fopen("ptable_read.txt","w");
-    printf("Data.size() = %u\n",Data.size());
+    printf("Data.size() = %zu\n",Data.size());
     for(i = 0; i < (int) Data.size(); i++){
         fprintf(pout,"row %d:",i);
         for (pos=Data[i].begin();pos!=Data[i].end();++pos){

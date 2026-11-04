@@ -3208,9 +3208,7 @@ string TauArgus::GetVersion(){
 
 string TauArgus::GetErrorString(long ErrorNumber)
 {
-	char ErrorNumberString[10];
-
-	sprintf(ErrorNumberString, "%ld", ErrorNumber);
+	const string ErrorNumberString = std::to_string(ErrorNumber);
 
 	string Error = TauArgusErrors.getProperty(ErrorNumberString);
 
@@ -4873,7 +4871,7 @@ void TauArgus::ShowCodeLists()  // in output pane
   char s[100];
   for (int i = 0; i < m_nvar; i++) {
     CVariable *v = &(m_var[i]);
-		sprintf(s, "%3ld %3ld %3ld %3d %8.0f %8.0f", v->bPos + 1, v->nPos, v->nDec, v->GetnCode(), v->MaxValue, v->MinValue);
+		snprintf(s, sizeof(s), "%3ld %3ld %3ld %3d %8.0f %8.0f", v->bPos + 1, v->nPos, v->nDec, v->GetnCode(), v->MaxValue, v->MinValue);
     TRACE("Var %2d. %s\n", i + 1, s);
 		for (int j = 0; j < v->GetnCode(); j++) {
       TRACE("  %4d. [%s]\n", j + 1, v->GetCode(j).c_str() );
@@ -4934,19 +4932,19 @@ bool TauArgus::ShowTable(const char *fname, CTable& tab)
 }
 
 // only for debug
-int TauArgus::ShowTableLayerCell(char *str, double val, int ndec)
+int TauArgus::ShowTableLayerCell(char *str, std::size_t capacity, double val, int ndec)
 { int c;
 
-	if (val == 0) c = sprintf(str, "%12s ", "-");
-	else          c = sprintf(str, "%12.*f ", ndec, val);
+	if (val == 0) c = snprintf(str, capacity, "%12s ", "-");
+	else          c = snprintf(str, capacity, "%12.*f ", ndec, val);
   return c;
 }
 
-int TauArgus::ShowTableLayerCell(char *str, long val)
+int TauArgus::ShowTableLayerCell(char *str, std::size_t capacity, long val)
 { int c;
 
-	if (val == 0) c = sprintf(str, "%6s ", "-");
-	else    	    c = sprintf(str, "%6ld ", val);
+	if (val == 0) c = snprintf(str, capacity, "%6s ", "-");
+	else    	    c = snprintf(str, capacity, "%6ld ", val);
   return c;
 }
 
@@ -4963,18 +4961,18 @@ void TauArgus::ShowTableLayer(FILE *fd, int var1, int var2, int cellnr, CTable& 
   { // compute width column
 		k = c = 0;
 		CDataCell *dc = tab.GetCell(c + k);
-		colwidth += ShowTableLayerCell(str, dc->GetResp(), m_var[tab.ResponseVarnr].nDec);
+        colwidth += ShowTableLayerCell(str, sizeof(str), dc->GetResp(), m_var[tab.ResponseVarnr].nDec);
 #ifndef COMPACT
-		colwidth += ShowTableLayerCell(str, dc->GetFreq());
-		colwidth += ShowTableLayerCell(str, dc->GetShadow(), m_var[tab.ShadowVarnr].nDec);
+        colwidth += ShowTableLayerCell(str, sizeof(str), dc->GetFreq());
+        colwidth += ShowTableLayerCell(str, sizeof(str), dc->GetShadow(), m_var[tab.ShadowVarnr].nDec);
 		if (tab.CostVarnr < 0) {
-  		colwidth += ShowTableLayerCell(str, dc->GetCost(), 0);
+        colwidth += ShowTableLayerCell(str, sizeof(str), dc->GetCost(), 0);
 		} else {
-			colwidth += ShowTableLayerCell(str, dc->GetCost(tab.Lambda), m_var[tab.CostVarnr].nDec);
+            colwidth += ShowTableLayerCell(str, sizeof(str), dc->GetCost(tab.Lambda), m_var[tab.CostVarnr].nDec);
 		}
 
 		for (int i = 0; i < dc->nMaxScore; i++) {
-			colwidth += ShowTableLayerCell(str, dc->MaxScore[i], m_var[tab.ShadowVarnr].nDec);
+            colwidth += ShowTableLayerCell(str, sizeof(str), dc->MaxScore[i], m_var[tab.ShadowVarnr].nDec);
 		}
 #endif
 		colwidth += 3;
@@ -4998,17 +4996,17 @@ void TauArgus::ShowTableLayer(FILE *fd, int var1, int var2, int cellnr, CTable& 
 			ASSERT(c + k >= 0 && c + k < tab.nCell);
 			CDataCell *dc;
 			dc = tab.GetCell(c + k);
-			ShowTableLayerCell(str, dc->GetResp(), m_var[tab.ResponseVarnr].nDec); fprintf(fd, "%s", str);
+            ShowTableLayerCell(str, sizeof(str), dc->GetResp(), m_var[tab.ResponseVarnr].nDec); fprintf(fd, "%s", str);
 #ifndef COMPACT
-			ShowTableLayerCell(str, dc->GetFreq()); fprintf(fd, "%s", str);
-			ShowTableLayerCell(str, dc->GetShadow(), m_var[tab.ShadowVarnr].nDec); fprintf(fd, "%s", str);
+            ShowTableLayerCell(str, sizeof(str), dc->GetFreq()); fprintf(fd, "%s", str);
+            ShowTableLayerCell(str, sizeof(str), dc->GetShadow(), m_var[tab.ShadowVarnr].nDec); fprintf(fd, "%s", str);
 			if (tab.CostVarnr < 0) {
-  			ShowTableLayerCell(str, dc->GetCost(tab.Lambda), 0); fprintf(fd, "%s", str);
+            ShowTableLayerCell(str, sizeof(str), dc->GetCost(tab.Lambda), 0); fprintf(fd, "%s", str);
 			} else {
-				ShowTableLayerCell(str, dc->GetCost(tab.Lambda), m_var[tab.CostVarnr].nDec); fprintf(fd, "%s", str);
+                ShowTableLayerCell(str, sizeof(str), dc->GetCost(tab.Lambda), m_var[tab.CostVarnr].nDec); fprintf(fd, "%s", str);
 			}
 			for (int i = 0; i < dc->nMaxScore; i++) {
-				ShowTableLayerCell(str, dc->MaxScore[i], m_var[tab.ShadowVarnr].nDec); fprintf(fd, "%s", str);
+                ShowTableLayerCell(str, sizeof(str), dc->MaxScore[i], m_var[tab.ShadowVarnr].nDec); fprintf(fd, "%s", str);
 			}
 #endif
 			switch (dc->GetStatus() ) {

@@ -221,8 +221,8 @@ bool CGhmiter::CellsTable(const char *FileName, CTable *tab, CVariable *m_var, b
 	if (fd == 0) return false;
 
 	// compute fixed data
-	n = sprintf(str, "%ld", tab->GetCell(0L)->GetFreq());
-	m = sprintf(str, "%.*f", (int)m_var[tab->ResponseVarnr].nDec, tab->GetCell(0L)->GetResp());
+	n = snprintf(str, sizeof(str), "%ld", tab->GetCell(0L)->GetFreq());
+	m = snprintf(str, sizeof(str), "%.*f", (int)m_var[tab->ResponseVarnr].nDec, tab->GetCell(0L)->GetResp());
 
 	// write for each cell a record in "eingabe"
 	WriteCell(fd, tab, m_var, n, m, m_var[tab->ResponseVarnr].nDec,

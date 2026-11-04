@@ -841,8 +841,6 @@ long CVariable::OrganizeCodelist()
 			string s = sCode[i];
 			if (((int)s.length()) > nPos) {
 				string temps = s;
-				s.substr(0, nPos);
-				temps.substr(nPos);
 				RemoveStringInPlace(temps, ' ');
 				if (!temps.empty()) {
 					return HC_CODETOOLONG;
