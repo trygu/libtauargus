@@ -65,6 +65,8 @@ protected:
 public:
 	CDataCell(int NumberMaxScoreCell, int NumberMaxScoreHolding, int IsHolding, int IsWeight );
 	CDataCell();
+    CDataCell(const CDataCell& other);
+    CDataCell& operator=(const CDataCell& other);
     void Write();
 
 // Operations

@@ -17,9 +17,78 @@
 
 #include <cstring>
 #include <cmath>
+#include <algorithm>
+#include <memory>
 
 #include "General.h"
 #include "DataCell.h"
+
+namespace {
+template <typename T>
+std::unique_ptr<T[]> copy_scores(const T *source, int count)
+{
+    if (!source || count <= 0) return std::unique_ptr<T[]>();
+    std::unique_ptr<T[]> result(new T[count]);
+    std::copy_n(source, count, result.get());
+    return result;
+}
+}
+
+CDataCell::CDataCell(const CDataCell& other) : CDataCell()
+{
+    *this = other;
+}
+
+CDataCell& CDataCell::operator=(const CDataCell& other)
+{
+    if (this == &other) return *this;
+    // Allocate all owned arrays before changing the destination.
+    auto cell = copy_scores(other.MaxScoreCell, other.nMaxScoreCell);
+    auto cell_weight = copy_scores(other.MaxScoreWeightCell, other.nMaxScoreCell);
+    auto holding = copy_scores(other.MaxScoreHolding, other.nMaxScoreHolding);
+    auto holding_weight = copy_scores(other.MaxScoreWeightHolding, other.nMaxScoreHolding);
+    auto holding_number = copy_scores(other.HoldingnrPerMaxScore, other.nMaxScoreHolding);
+    Resp = other.Resp;
+    NWResp = other.NWResp;
+    Cost = other.Cost;
+    Shadow = other.Shadow;
+    CellKey = other.CellKey;
+    CellKeyNoZeros = other.CellKeyNoZeros;
+    Freq = other.Freq;
+    Weight = other.Weight;
+    FreqHolding = other.FreqHolding;
+    RoundedResp = other.RoundedResp;
+    CTAValue = other.CTAValue;
+    CKMValue = other.CKMValue;
+    Status = other.Status;
+    TempShadow = other.TempShadow;
+    HoldingNr = other.HoldingNr;
+    PeepSortCell = other.PeepSortCell;
+    PeepSortHolding = other.PeepSortHolding;
+    TempPeepSort = other.TempPeepSort;
+    PeepCell = other.PeepCell;
+    PeepHolding = other.PeepHolding;
+    RealizedUpperValue = other.RealizedUpperValue;
+    RealizedLowerValue = other.RealizedLowerValue;
+    LowerProtectionLevel = other.LowerProtectionLevel;
+    UpperProtectionLevel = other.UpperProtectionLevel;
+    MinScoreCell = other.MinScoreCell;
+    MinScoreWeightCell = other.MinScoreWeightCell;
+    nMaxScoreCell = other.nMaxScoreCell;
+    nMaxScoreHolding = other.nMaxScoreHolding;
+    IsFilled = other.IsFilled;
+    delete [] MaxScoreCell;
+    delete [] MaxScoreWeightCell;
+    delete [] MaxScoreHolding;
+    delete [] MaxScoreWeightHolding;
+    delete [] HoldingnrPerMaxScore;
+    MaxScoreCell = cell.release();
+    MaxScoreWeightCell = cell_weight.release();
+    MaxScoreHolding = holding.release();
+    MaxScoreWeightHolding = holding_weight.release();
+    HoldingnrPerMaxScore = holding_number.release();
+    return *this;
+}
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
