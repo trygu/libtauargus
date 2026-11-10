@@ -31,6 +31,7 @@
 #include "Globals.h"
 #include "AMPL.h"
 #include "Properties.h"
+#include "TauArgusErrorStrings.h"
 #include "PTable.h"
 #include "PTableCont.h"
 
@@ -3251,10 +3252,18 @@ string TauArgus::GetErrorString(long ErrorNumber)
 {
 	const string ErrorNumberString = std::to_string(ErrorNumber);
 
+	// A TauArgus.properties in the working directory still wins (legacy
+	// override); otherwise the embedded catalog answers, then the
+	// "UnKnown Error (N)" fallback.
 	string Error = TauArgusErrors.getProperty(ErrorNumberString);
 
 	if (Error.empty()) {
-		Error = string("UnKnown Error (") + ErrorNumberString + ")";
+		const char *embedded = TauErrorString(ErrorNumber);
+		if (embedded != 0) {
+			Error = embedded;
+		} else {
+			Error = string("UnKnown Error (") + ErrorNumberString + ")";
+		}
 	}
 
 	return Error;
