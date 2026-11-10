@@ -217,7 +217,7 @@ public:
 	bool SetTotalsInCodeList(/*[in]*/ long NumberofVariables,/*[in]*/  long* VarIndex,/*[in,out]*/  long* ErrorCode, /*[in,out]*/  long*  ErrorInVarIndex);
 	bool SetInCodeList(/*[in]*/ long NumberofVar,  /*[in]*/ long* VarIndex, /*[in]*/ char* sCode[], /*[in,out]*/ long* ErrorCode, /*[in,out]*/ long* ErrorInVarIndex);
 	bool WriteCellRecords(/*[in]*/ long TableIndex, /*[in]*/ const char* FileName, /*[in]*/  long SBS, /*[in]*/ bool SBSLevel, /*[in]*/ bool SuppressEmpty, /*[in]*/ const char* FirstLine, bool ShowUnsafe, /*[in]*/ bool EmbedQuotes, long RespType);
-	void GetTotalTabelSize(/*[in]*/ long TableIndex,/*[in,out]*/ long* nCell, /*[in,out]*/ long* SizeDataCell);
+	bool GetTotalTabelSize(/*[in]*/ long TableIndex,/*[in,out]*/ long* nCell, /*[in,out]*/ long* SizeDataCell);
 	long SetSecondaryJJFORMAT(/*[in]*/ long TableIndex, /*[in]*/ const char* FileName, /*[in]*/ bool WithBogus, /*[in,out]*/ long * nSetSecondary);
 	bool WriteJJFormat(/*[in]*/ long TableIndex, /*[in]*/ const char* FileName, /*[in]*/ double LowerBound,  /*[in]*/ double UpperBound, /*[in]*/ bool WithBogus , bool AsPerc, bool ForRounding);
 	bool WriteCSV(/*[in]*/ long TableIndex, /*[in]*/ const char* FileName, /*[in]*/ bool EmbedQuotes, /*[in,out]*/ long * DimSequence,long RespType);
@@ -286,7 +286,7 @@ public:
 	bool ComputeTables( /*[in,out]*/ long * ErrorCode, /*[in,out]*/ long * TableIndex);
 	bool SetNumberTab( /*[in]*/ long nTab);
 	bool SetNumberVar(/*[in]*/ long nVar);
-	double GetMinimumCellValue(/*[in]*/ long TableIndex, /*[in,out]*/ double *Maximum);
+	bool GetMinimumCellValue(/*[in]*/ long TableIndex, /*[in,out]*/ double *Minimum, /*[in,out]*/ double *Maximum);
 	bool SetProtectionLevelsForResponseTable(/*[in]*/ long TableIndex,/*[in,out]*/ long * DimIndex,/*[in]*/ double LowerBound, /*[in]*/ double UpperBound);
 	std::string GetErrorString(/*[in]*/ long ErrorNumber);
         std::string GetVersion();

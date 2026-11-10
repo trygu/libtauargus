@@ -16,11 +16,11 @@ static void require_unavailable(TauArgus &engine, long index,
                                 const char *message)
 {
     require(engine.MaximumProtectionLevel(index) == 0.0, message);
-    double maximum = -1.0;
-    require(engine.GetMinimumCellValue(index, &maximum) == 0.0, message);
-    require(maximum == 0.0, message);
+    double minimum = -1.0, maximum = -1.0;
+    require(!engine.GetMinimumCellValue(index, &minimum, &maximum), message);
+    require(minimum == 0.0 && maximum == 0.0, message);
     long cells = -1, size = -1;
-    engine.GetTotalTabelSize(index, &cells, &size);
+    require(!engine.GetTotalTabelSize(index, &cells, &size), message);
     require(cells == 0 && size == 0, message);
 }
 
