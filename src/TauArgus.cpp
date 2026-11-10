@@ -2885,7 +2885,13 @@ bool TauArgus::SetProtectionLevelsForResponseTable(long TableIndex, long *DimInd
 
 double TauArgus::MaximumProtectionLevel(long TableIndex)
 {
-	CTable *tab = &m_tab[TableIndex];
+	if (TableIndex < 0 || TableIndex >= m_ntab) {
+		return 0.0;
+	}
+	CTable *tab = GetTable(TableIndex);
+	if (tab == NULL) {
+		return 0.0;
+	}
 	double maxprot = 0;
 
 	for (long c = 0; c < tab->nCell; c++)	{
@@ -2903,11 +2909,20 @@ double TauArgus::MaximumProtectionLevel(long TableIndex)
 //GetMinimumCellValue
 double TauArgus::GetMinimumCellValue(long TableIndex, double *Maximum)
 {
+	if (TableIndex < 0 || TableIndex >= m_ntab) {
+		*Maximum = 0.0;
+		return 0.0;
+	}
+	CTable *tab = GetTable(TableIndex);
+	if (tab == NULL) {
+		*Maximum = 0.0;
+		return 0.0;
+	}
 
 	double mincell = 10E+60, maxcell = -10E+60;
 
-	for (long c = 0; c < m_tab[TableIndex].nCell; c++)	{
-		CDataCell *dc = m_tab[TableIndex].GetCell(c);
+	for (long c = 0; c < tab->nCell; c++)	{
+		CDataCell *dc = tab->GetCell(c);
 		long St = dc->GetStatus();
 		// 10 juni 2005 toegevoegd: alleen voor onveilige cellen AHNL
 		if ( St < CS_EMPTY) {

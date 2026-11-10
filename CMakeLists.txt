@@ -58,6 +58,9 @@ if(TAUARGUS_CORE_BUILD_TESTS)
     target_link_libraries(test_cell_buffer_sizes PRIVATE tauargus_core)
     add_test(NAME cell_buffer_sizes COMMAND test_cell_buffer_sizes
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/capacity.asc")
+    add_executable(test_table_index_guards tests/test_table_index_guards.cpp)
+    target_link_libraries(test_table_index_guards PRIVATE tauargus_core)
+    add_test(NAME table_index_guards COMMAND test_table_index_guards)
 endif()
 
 target_compile_options(tauargus_core PRIVATE
