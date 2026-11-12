@@ -3245,7 +3245,11 @@ bool TauArgus::SetAllNonStructuralAsEmpty(long TableIndex)
 
 
 string TauArgus::GetVersion(){
+#ifdef TAUARGUS_ENGINE_VERSION
+    return TAUARGUS_ENGINE_VERSION;
+#else
     return VERSIONNUMBER;
+#endif
 }
 
 string TauArgus::GetErrorString(long ErrorNumber)
