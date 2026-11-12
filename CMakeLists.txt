@@ -34,6 +34,14 @@ endif()
 add_library(tauargus_core STATIC ${CORE_SRC})
 add_library(tauargus::core ALIAS tauargus_core)
 
+# The train version. The superbuild injects it from engine/ENGINE-VERSION;
+# a standalone module build falls back to VERSIONNUMBER in defines.h.
+if(NOT DEFINED TAUARGUS_ENGINE_VERSION)
+    set(TAUARGUS_ENGINE_VERSION "1.1.4.11")
+endif()
+target_compile_definitions(tauargus_core PRIVATE
+    TAUARGUS_ENGINE_VERSION="${TAUARGUS_ENGINE_VERSION}")
+
 target_include_directories(tauargus_core
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
@@ -58,6 +66,9 @@ if(TAUARGUS_CORE_BUILD_TESTS)
     target_link_libraries(test_cell_buffer_sizes PRIVATE tauargus_core)
     add_test(NAME cell_buffer_sizes COMMAND test_cell_buffer_sizes
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/capacity.asc")
+    add_executable(test_table_index_guards tests/test_table_index_guards.cpp)
+    target_link_libraries(test_table_index_guards PRIVATE tauargus_core)
+    add_test(NAME table_index_guards COMMAND test_table_index_guards)
 endif()
 
 target_compile_options(tauargus_core PRIVATE

@@ -19,6 +19,9 @@
 #ifndef __TAUARGUSDEFINESH
 #define __TAUARGUSDEFINESH
 
+/* Fallback for builds outside the superbuild. The superbuild injects
+ * TAUARGUS_ENGINE_VERSION from engine/ENGINE-VERSION (the train version),
+ * which TauArgus::GetVersion prefers when defined. */
 #define VERSIONNUMBER "1.1.4.11"
 
 #define MAXCODEWIDTH 100
