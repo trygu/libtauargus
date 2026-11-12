@@ -31,6 +31,7 @@
 #include "Globals.h"
 #include "AMPL.h"
 #include "Properties.h"
+#include "TauArgusErrorStrings.h"
 #include "PTable.h"
 #include "PTableCont.h"
 
@@ -2136,18 +2137,18 @@ long TauArgus::SetSecondaryJJFORMAT(long TableIndex, const char* FileName, bool 
 }
 
 // Get Size of a tabel.
-void TauArgus::GetTotalTabelSize(long TableIndex, long* nCell, long * SizeDataCell)
+bool TauArgus::GetTotalTabelSize(long TableIndex, long* nCell, long * SizeDataCell)
 {
 	if (TableIndex < 0 || TableIndex >= m_ntab) {
 		*nCell = 0;
 		*SizeDataCell = 0;
-		return;
+		return false;
 	}
 	CTable *tab = GetTable(TableIndex);
-	if (tab == NULL) {
+	if (tab == NULL || tab->nCell == 0) {
 		*nCell = 0;
 		*SizeDataCell = 0;
-		return;
+		return false;
 	}
 	*nCell = tab->nCell;
 	int lenarrcell = tab->NumberofMaxScoreCell;
@@ -2155,6 +2156,7 @@ void TauArgus::GetTotalTabelSize(long TableIndex, long* nCell, long * SizeDataCe
 	int applyhold = tab->ApplyHolding;
 	int applyweight = tab->ApplyWeight;
 	*SizeDataCell = sizeof(CDataCell(lenarrcell, lenarrhold, applyhold, applyweight));
+	return true;
 }
 
 // Write Cell in file
@@ -2338,6 +2340,12 @@ bool TauArgus::SetInTable(long Index, char *sCode[],
 			  long *ErrorCode, long *ErrVNum)
 {
 	*ErrVNum = 0;
+
+	// range check before touching m_tab
+	if (Index < 0 || Index >= m_ntab) {
+		*ErrorCode = TABLENOTSET;
+		return false;
+	}
 
 	// check if table is defined
 	if (m_tab[Index].nDim == 0) {
@@ -2885,7 +2893,13 @@ bool TauArgus::SetProtectionLevelsForResponseTable(long TableIndex, long *DimInd
 
 double TauArgus::MaximumProtectionLevel(long TableIndex)
 {
-	CTable *tab = &m_tab[TableIndex];
+	if (TableIndex < 0 || TableIndex >= m_ntab) {
+		return 0.0;
+	}
+	CTable *tab = GetTable(TableIndex);
+	if (tab == NULL) {
+		return 0.0;
+	}
 	double maxprot = 0;
 
 	for (long c = 0; c < tab->nCell; c++)	{
@@ -2901,24 +2915,47 @@ double TauArgus::MaximumProtectionLevel(long TableIndex)
 }
 
 //GetMinimumCellValue
-double TauArgus::GetMinimumCellValue(long TableIndex, double *Maximum)
+// Returns true when the table holds at least one non-empty cell; the
+// extreme responses are then written to Minimum/Maximum. A missing,
+// unset or empty table returns false with both out-params at 0.0.
+bool TauArgus::GetMinimumCellValue(long TableIndex, double *Minimum, double *Maximum)
 {
+	if (TableIndex < 0 || TableIndex >= m_ntab) {
+		*Minimum = 0.0;
+		*Maximum = 0.0;
+		return false;
+	}
+	CTable *tab = GetTable(TableIndex);
+	if (tab == NULL || tab->nCell == 0) {
+		*Minimum = 0.0;
+		*Maximum = 0.0;
+		return false;
+	}
 
 	double mincell = 10E+60, maxcell = -10E+60;
+	bool found = false;
 
-	for (long c = 0; c < m_tab[TableIndex].nCell; c++)	{
-		CDataCell *dc = m_tab[TableIndex].GetCell(c);
+	for (long c = 0; c < tab->nCell; c++)	{
+		CDataCell *dc = tab->GetCell(c);
 		long St = dc->GetStatus();
 		// 10 juni 2005 toegevoegd: alleen voor onveilige cellen AHNL
 		if ( St < CS_EMPTY) {
 			mincell = min(mincell, dc->GetResp());
 			maxcell = max(maxcell, dc->GetResp());
+			found = true;
 		}
 
 	}
 
+	if (!found) {
+		*Minimum = 0.0;
+		*Maximum = 0.0;
+		return false;
+	}
+
+	*Minimum = mincell;
 	*Maximum = maxcell;
-	return mincell;
+	return true;
 }
 
 bool TauArgus::SetRoundedResponse(const char* RoundedFile, long TableIndex)
@@ -3208,17 +3245,29 @@ bool TauArgus::SetAllNonStructuralAsEmpty(long TableIndex)
 
 
 string TauArgus::GetVersion(){
+#ifdef TAUARGUS_ENGINE_VERSION
+    return TAUARGUS_ENGINE_VERSION;
+#else
     return VERSIONNUMBER;
+#endif
 }
 
 string TauArgus::GetErrorString(long ErrorNumber)
 {
 	const string ErrorNumberString = std::to_string(ErrorNumber);
 
+	// A TauArgus.properties in the working directory still wins (legacy
+	// override); otherwise the embedded catalog answers, then the
+	// "UnKnown Error (N)" fallback.
 	string Error = TauArgusErrors.getProperty(ErrorNumberString);
 
 	if (Error.empty()) {
-		Error = string("UnKnown Error (") + ErrorNumberString + ")";
+		const char *embedded = TauErrorString(ErrorNumber);
+		if (embedded != 0) {
+			Error = embedded;
+		} else {
+			Error = string("UnKnown Error (") + ErrorNumberString + ")";
+		}
 	}
 
 	return Error;
