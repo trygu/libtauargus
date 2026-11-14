@@ -35,9 +35,17 @@ add_library(tauargus_core STATIC ${CORE_SRC})
 add_library(tauargus::core ALIAS tauargus_core)
 
 # The train version. The superbuild injects it from engine/ENGINE-VERSION;
-# a standalone module build falls back to VERSIONNUMBER in defines.h.
+# a standalone module build reads the same file from the engine root, and
+# only a detached core (no engine root) falls back to VERSIONNUMBER in
+# defines.h.
 if(NOT DEFINED TAUARGUS_ENGINE_VERSION)
-    set(TAUARGUS_ENGINE_VERSION "1.1.4.11")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../ENGINE-VERSION")
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../../ENGINE-VERSION" _TA_EVER)
+        string(STRIP "${_TA_EVER}" _TA_EVER)
+        set(TAUARGUS_ENGINE_VERSION "${_TA_EVER}")
+    else()
+        set(TAUARGUS_ENGINE_VERSION "1.1.4.11")
+    endif()
 endif()
 target_compile_definitions(tauargus_core PRIVATE
     TAUARGUS_ENGINE_VERSION="${TAUARGUS_ENGINE_VERSION}")
